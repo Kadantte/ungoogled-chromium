@@ -1,7 +1,7 @@
 name: New version check
 
 on:
-  # enabling manual trigger
+  # enabling manual triggers
   workflow_dispatch:
   # running every hour
   schedule:
