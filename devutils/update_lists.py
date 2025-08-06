@@ -66,6 +66,8 @@ PRUNING_EXCLUDE_PATTERNS = [
     'third_party/node/node_modules/@rollup/wasm-node/dist/wasm-node/bindings_wasm_bg.wasm',
     # Exclusion for performance tracing
     'third_party/perfetto/src/trace_processor/importers/proto/atoms.descriptor',
+    # Exclusion for jiff
+    'third_party/rust/chromium_crates_io/vendor/jiff-tzdb-v0_1/concatenated-zoneinfo.dat',
     # Exclusions for safe file extensions
     '*.avif',
     '*.ttf',
@@ -114,6 +116,8 @@ DOMAIN_EXCLUDE_PREFIXES = [
     'third_party/blink/renderer/core/dom/document.cc',
     # Exclusion to allow download of sysroots
     'build/linux/sysroot_scripts/sysroots.json',
+    # Licenses and credits
+    'tools/licenses/licenses.py',
 ]
 
 # pylint: enable=line-too-long
@@ -243,6 +247,10 @@ def should_domain_substitute(path, relative_path, search_regex, used_dep_set, us
             for exclude_prefix in DOMAIN_EXCLUDE_PREFIXES:
                 if relative_path_posix.startswith(exclude_prefix):
                     used_dep_set.add(exclude_prefix)
+                    return False
+            # Skip LICENSE.* files so that they remain untouched.
+            for license_path in ['license', 'license.txt', 'license.html']:
+                if relative_path_posix.endswith('/' + license_path):
                     return False
             return _check_regex_match(path, search_regex)
     return False
